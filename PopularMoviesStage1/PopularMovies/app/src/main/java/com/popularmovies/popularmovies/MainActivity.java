@@ -1,24 +1,32 @@
 package com.popularmovies.popularmovies;
 
+import android.content.Context;
+import android.content.Intent;
 import android.os.AsyncTask;
+import android.os.Parcelable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.ImageView;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.widget.Toast;
 
+import com.popularmovies.popularmovies.utils.JSONUtils;
+import com.popularmovies.popularmovies.utils.MovieData;
+import com.popularmovies.popularmovies.utils.NetworkUtils;
 import com.squareup.picasso.Picasso;
 
 import java.io.IOException;
 import java.net.URL;
 
-public class MainActivity extends AppCompatActivity
+public class MainActivity extends AppCompatActivity implements MyAdapter.ListItemClickListener
 {
     private static String TAG = MainActivity.class.getSimpleName();
+
+    private final String SORT_BY_POPULAR = "popular";
+    private final String SORT_BY_TOP_RATED = "top_rated";
 
     private RecyclerView mRecyclerView;
     private GridLayoutManager mGridLayoutManager;
@@ -33,104 +41,97 @@ public class MainActivity extends AppCompatActivity
 
         setContentView(R.layout.activity_main);
 
+        Picasso.with(this).setLoggingEnabled(true);
+
         mRecyclerView = (RecyclerView) this.findViewById(R.id.rv_grid_view);
         mGridLayoutManager = new GridLayoutManager(this, 2);
 
         mRecyclerView.setLayoutManager(mGridLayoutManager);
 
-        myAdapter = new MyAdapter();
+        myAdapter = new MyAdapter(this);
         mRecyclerView.setAdapter(myAdapter);
 
-        new FetchMovieData().execute();
+        new FetchMoviesData().execute(SORT_BY_POPULAR);
     }
 
-    public class FetchMovieData extends AsyncTask<String, Void, String[]>
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu)
+    {
+        getMenuInflater().inflate(R.menu.main_menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item)
+    {
+        int itemIdSelected = item.getItemId();
+        Context context = MainActivity.this;
+        String message = "";
+
+        switch (itemIdSelected)
+        {
+            case R.id.action_sort_by_most_populer:
+                message = "Sort by most popular";
+                new FetchMoviesData().execute(SORT_BY_POPULAR);
+                break;
+            case R.id.action_sort_by_top_rated:
+                message = "Sort by top rated";
+                new FetchMoviesData().execute(SORT_BY_TOP_RATED);
+                break;
+        }
+
+        if(!message.equals(""))
+        {
+            Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onListItemClickListener(MovieData clickedMovieData)
+    {
+        //Toast.makeText(MainActivity.this, clickedMovieData.getOriginalTitle(), Toast.LENGTH_SHORT).show();
+
+        Intent intent = new Intent(MainActivity.this, MovieScreenActivity.class);
+        intent.putExtra("original_title", clickedMovieData.getOriginalTitle());
+        intent.putExtra("poster_url", clickedMovieData.getMoviePosterURL());
+        intent.putExtra("plot", clickedMovieData.getPlot());
+        intent.putExtra("user_rating", clickedMovieData.getUserRating());
+        intent.putExtra("release_date", clickedMovieData.getReleaseDate());
+        startActivity(intent);
+    }
+
+    class FetchMoviesData extends AsyncTask<String, Void, MovieData[]>
     {
 
-        @Override protected String[] doInBackground(String... params)
+        @Override
+        protected MovieData[] doInBackground(String... params)
         {
-            String[] posterUrls = null;
-            URL movieListUrl = NetworkUtils.buildUrl("popular", "1");
+            MovieData[] moviesData = null;
+            String sortByText = params[0];
+
+            URL movieListUrl = NetworkUtils.buildUrl(sortByText, "1");
+
             try
             {
-                String jsonWeatherResponse = NetworkUtils.getResponseFromHttpUrl(movieListUrl);
-                posterUrls = NetworkUtils.getMoviePosterURLArray(jsonWeatherResponse);
-
-                for (int i=0; i < posterUrls.length; i++)
-                {
-                    Log.d(TAG, posterUrls[i]);
-                }
+                String jsonResponse = NetworkUtils.getResponseFromHttpUrl(movieListUrl);
+                moviesData = JSONUtils.getMovieData(jsonResponse);
             }
             catch (IOException e)
             {
                 e.printStackTrace();
             }
 
-            return posterUrls;
+            return moviesData;
         }
 
         @Override
-        protected void onPostExecute(String[] posterUrls)
+        protected void onPostExecute(MovieData[] moviesData)
         {
-            myAdapter.setMoviePostersData(posterUrls);
-        }
-    }
-
-    public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder>
-    {
-        private String[] mDataSet;
-
-        public MyAdapter()
-        {
-            mDataSet = new String[10];
-        }
-
-        @Override
-        public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType)
-        {
-            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.grid_image_view_layout, parent, false);
-            ViewHolder vh = new ViewHolder(view);
-            return vh;
-        }
-
-        @Override
-        public void onBindViewHolder(ViewHolder holder, int position)
-        {
-            holder.setImage(mDataSet[position]);
-        }
-
-        @Override
-        public int getItemCount()
-        {
-            if(mDataSet == null)
-            {
-                return 0;
-            }
-
-            return mDataSet.length;
-        }
-
-        public void setMoviePostersData(String[] posterUrlData)
-        {
-            mDataSet = posterUrlData;
-            notifyDataSetChanged();
-        }
-
-        public class ViewHolder extends RecyclerView.ViewHolder
-        {
-            public ImageView mImageView;
-
-            public ViewHolder(View view)
-            {
-                super(view);
-                mImageView = (ImageView) view.findViewById(R.id.img_android);
-            }
-
-            public void setImage(String imageUrl)
-            {
-                Log.d(TAG, "Setting picasso:" + imageUrl);
-                Picasso.with(mImageView.getContext()).load(imageUrl).resize(40, 40).into(mImageView);
-            }
+            Log.d(TAG, "onPostExecute");
+            myAdapter.setMoviesData(moviesData);
         }
     }
 }

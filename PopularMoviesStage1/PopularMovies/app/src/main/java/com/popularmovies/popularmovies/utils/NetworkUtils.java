@@ -1,11 +1,7 @@
-package com.popularmovies.popularmovies;
+package com.popularmovies.popularmovies.utils;
 
 import android.net.Uri;
 import android.util.Log;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -63,56 +59,17 @@ public class NetworkUtils
             scanner.useDelimiter("\\A");
 
             boolean hasInput = scanner.hasNext();
-            if (hasInput) {
+            if (hasInput)
+            {
                 return scanner.next();
-            } else {
+            }
+            else
+            {
                 return null;
             }
-        } finally {
+        } finally
+        {
             urlConnection.disconnect();
         }
-    }
-
-    public static String[] getMoviePosterURLArray(String movieDetailsStr)
-    {
-        String[] posterURLArray = null;
-        final String OWM_MESSAGE_CODE = "cod";
-
-        try
-        {
-            JSONObject movieDetailsJson = new JSONObject(movieDetailsStr);
-
-            /* Is there an error? */
-            if (movieDetailsJson.has(OWM_MESSAGE_CODE))
-            {
-                int errorCode = movieDetailsJson.getInt(OWM_MESSAGE_CODE);
-
-                switch (errorCode)
-                {
-                    case HttpURLConnection.HTTP_OK:
-                        break;
-                    case HttpURLConnection.HTTP_NOT_FOUND:
-                        return null;
-                    default:
-                    /* Server probably down */
-                        return null;
-                }
-            }
-
-            JSONArray movieResultsArray = movieDetailsJson.getJSONArray("results");
-            posterURLArray = new String[movieResultsArray.length()];
-
-            for (int i=0; i < movieResultsArray.length(); i++)
-            {
-                JSONObject movieObject = movieResultsArray.getJSONObject(i);
-                posterURLArray[i] = " http://image.tmdb.org/t/p/w185" + movieObject.getString("poster_path");
-            }
-        }
-        catch (JSONException e)
-        {
-            e.printStackTrace();
-        }
-
-        return posterURLArray;
     }
 }

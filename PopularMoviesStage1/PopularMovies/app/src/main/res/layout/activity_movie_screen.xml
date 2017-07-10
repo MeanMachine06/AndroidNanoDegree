@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/activity_movie_screen"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="10dp"
+    tools:context="com.popularmovies.popularmovies.MovieScreenActivity">
+
+    <ImageView
+        android:id="@+id/movie_poster"
+        android:layout_width="100dp"
+        android:layout_height="150dp"
+        android:layout_margin="0dp"
+        android:layout_marginRight="0dp"
+        android:adjustViewBounds="false"
+        />
+
+    <TextView
+        android:id="@+id/movie_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@id/movie_poster"
+        android:paddingLeft="10dp"
+        android:textSize="18sp"
+        android:text=" "/>
+
+    <TextView
+        android:id="@+id/user_rating"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/movie_name"
+        android:layout_below="@id/movie_name"
+        android:paddingLeft="10dp"
+        android:paddingTop="10dp"
+        android:textSize="16sp"/>
+
+    <TextView
+        android:id="@+id/release_date"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/movie_name"
+        android:layout_below="@+id/user_rating"
+        android:paddingLeft="10dp"
+        android:textSize="16sp"/>
+
+    <TextView
+        android:id="@+id/movie_plot"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/movie_poster"
+        android:hint="Plot"
+        android:textSize="16sp"
+        android:paddingTop="10dp"/>
+</RelativeLayout>
