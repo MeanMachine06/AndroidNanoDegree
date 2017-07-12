@@ -17,7 +17,7 @@ import java.util.Scanner;
 public class NetworkUtils
 {
     private static final String TAG = NetworkUtils.class.getSimpleName();
-    private static final String TMDB_API_KEY = "";
+    private static final String TMDB_API_KEY = "2652ef1ac009900d66f5bdf7d58240e4";
     private static final String STATIC_TMDB_URL = "https://api.themoviedb.org/3/movie";
     private static final String API_KEY_PARAM = "api_key";
     private static final String LANGUAGE_PARAM = "language";
@@ -51,6 +51,9 @@ public class NetworkUtils
     public static String getResponseFromHttpUrl(URL url) throws IOException
     {
         HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
+        urlConnection.setConnectTimeout(5000);
+        urlConnection.setReadTimeout(10000);
+
         try
         {
             InputStream in = urlConnection.getInputStream();

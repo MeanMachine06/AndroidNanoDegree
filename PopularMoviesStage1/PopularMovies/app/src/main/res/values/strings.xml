@@ -5,4 +5,6 @@
     <string name="top_rated">Top Rated</string>
 
     <string name="movie_screen_name">Movie Details</string>
+    <string name="user_rating">User rating: %1$s</string>
+    <string name="release_date">Release Date: %1$s</string>
 </resources>

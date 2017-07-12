@@ -95,11 +95,7 @@ public class MainActivity extends AppCompatActivity implements MyAdapter.ListIte
         //Toast.makeText(MainActivity.this, clickedMovieData.getOriginalTitle(), Toast.LENGTH_SHORT).show();
 
         Intent intent = new Intent(MainActivity.this, MovieScreenActivity.class);
-        intent.putExtra("original_title", clickedMovieData.getOriginalTitle());
-        intent.putExtra("poster_url", clickedMovieData.getMoviePosterURL());
-        intent.putExtra("plot", clickedMovieData.getPlot());
-        intent.putExtra("user_rating", clickedMovieData.getUserRating());
-        intent.putExtra("release_date", clickedMovieData.getReleaseDate());
+        intent.putExtra("movie_data", clickedMovieData);
         startActivity(intent);
     }
 
