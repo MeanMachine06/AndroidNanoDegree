@@ -1,7 +1,6 @@
 package com.popularmovies.popularmovies;
 
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -9,6 +8,8 @@ import android.widget.ImageView;
 
 import com.popularmovies.popularmovies.utils.MovieData;
 import com.squareup.picasso.Picasso;
+
+import java.util.ArrayList;
 
 /**
  * Created by Aditya on 7/8/2017.
@@ -19,12 +20,12 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder>
     private static final String TAG = MyAdapter.class.getSimpleName();
     private final ListItemClickListener mListItemClickListner;
 
-    private MovieData[] mMoviesData;
+    private ArrayList<MovieData> mMoviesData;
 
     public MyAdapter(ListItemClickListener listner)
     {
         mListItemClickListner = listner;
-        mMoviesData = null;
+        mMoviesData = new ArrayList<MovieData>();
     }
 
     @Override
@@ -38,7 +39,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder>
     @Override
     public void onBindViewHolder(ViewHolder holder, int position)
     {
-        holder.setImage(mMoviesData[position].getMoviePosterURL());
+        holder.setImage(mMoviesData.get(position).getMoviePosterURL());
     }
 
     @Override
@@ -49,12 +50,23 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder>
             return 0;
         }
 
-        return mMoviesData.length;
+        return mMoviesData.size();
     }
 
     public void setMoviesData(MovieData[] moviesData)
     {
-        mMoviesData = moviesData;
+        int len = moviesData.length;
+        for (int i = 0; i < len; i++)
+        {
+            mMoviesData.add(moviesData[i]);
+        }
+
+        notifyDataSetChanged();
+    }
+
+    public void clearMovieListData()
+    {
+        mMoviesData.clear();
         notifyDataSetChanged();
     }
 
@@ -71,7 +83,6 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder>
 
         public void setImage(String imageUrl)
         {
-            Log.d(TAG, "Setting picasso:" + imageUrl);
             Picasso.with(mImageView.getContext()).load(imageUrl).into(mImageView);
         }
 
@@ -79,7 +90,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder>
         public void onClick(View v)
         {
             int clickedPosition = getAdapterPosition();
-            mListItemClickListner.onListItemClickListener(mMoviesData[clickedPosition]);
+            mListItemClickListner.onListItemClickListener(mMoviesData.get(clickedPosition));
         }
     }
 

@@ -2,12 +2,14 @@ package com.popularmovies.popularmovies;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
-import android.os.Parcelable;
+import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -31,6 +33,10 @@ public class MainActivity extends AppCompatActivity implements MyAdapter.ListIte
     private RecyclerView mRecyclerView;
     private GridLayoutManager mGridLayoutManager;
     private MyAdapter myAdapter;
+    private EndlessRecyclerViewScrollListener mScrollListener;
+
+    private String mCurrentSortOrder = SORT_BY_POPULAR;
+    private String mFirstPageNumber = "1";
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -41,17 +47,29 @@ public class MainActivity extends AppCompatActivity implements MyAdapter.ListIte
 
         setContentView(R.layout.activity_main);
 
-        Picasso.with(this).setLoggingEnabled(true);
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+        mCurrentSortOrder = sharedPreferences.getString("sort_order", SORT_BY_POPULAR);
+
+        Picasso.with(this).setLoggingEnabled(false);
 
         mRecyclerView = (RecyclerView) this.findViewById(R.id.rv_grid_view);
-        mGridLayoutManager = new GridLayoutManager(this, 2);
+        mGridLayoutManager = new GridLayoutManager(this, calculateNoOfColumns(this));
 
         mRecyclerView.setLayoutManager(mGridLayoutManager);
 
         myAdapter = new MyAdapter(this);
         mRecyclerView.setAdapter(myAdapter);
 
-        new FetchMoviesData().execute(SORT_BY_POPULAR);
+        mScrollListener = new EndlessRecyclerViewScrollListener(mGridLayoutManager)
+        {
+            @Override public void onLoadMore(int page, int totalItemsCount, RecyclerView view)
+            {
+                loadMovieList(mCurrentSortOrder, Integer.toString(page));
+            }
+        };
+
+        mRecyclerView.addOnScrollListener(mScrollListener);
+        loadMovieList(mCurrentSortOrder, mFirstPageNumber);
     }
 
     @Override
@@ -72,21 +90,40 @@ public class MainActivity extends AppCompatActivity implements MyAdapter.ListIte
         {
             case R.id.action_sort_by_most_populer:
                 message = "Sort by most popular";
-                new FetchMoviesData().execute(SORT_BY_POPULAR);
+                resetMovieList(mCurrentSortOrder);
+                loadMovieList(SORT_BY_POPULAR, mFirstPageNumber);
                 break;
             case R.id.action_sort_by_top_rated:
                 message = "Sort by top rated";
-                new FetchMoviesData().execute(SORT_BY_TOP_RATED);
+                resetMovieList(mCurrentSortOrder);
+                loadMovieList(SORT_BY_TOP_RATED, mFirstPageNumber);
                 break;
         }
 
         if(!message.equals(""))
         {
+            SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+            SharedPreferences.Editor editor = sharedPreferences.edit();
+            editor.putString("sort_order", mCurrentSortOrder);
+            editor.apply();
+
             Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
             return true;
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    private void resetMovieList(String sortOrder)
+    {
+        myAdapter.clearMovieListData();
+        mScrollListener.resetState();
+    }
+
+    private void loadMovieList(String sortOrder, String pageNum)
+    {
+        mCurrentSortOrder = sortOrder;
+        new FetchMoviesData().execute(sortOrder, pageNum);
     }
 
     @Override
@@ -99,6 +136,15 @@ public class MainActivity extends AppCompatActivity implements MyAdapter.ListIte
         startActivity(intent);
     }
 
+    private int calculateNoOfColumns(Context context)
+    {
+        DisplayMetrics displayMetrics = context.getResources().getDisplayMetrics();
+        float dpWidth = displayMetrics.widthPixels / displayMetrics.density;
+        int scalingFactor = 90;
+        int noOfColumns = (int) (dpWidth / scalingFactor);
+        return noOfColumns;
+    }
+
     class FetchMoviesData extends AsyncTask<String, Void, MovieData[]>
     {
 
@@ -107,11 +153,18 @@ public class MainActivity extends AppCompatActivity implements MyAdapter.ListIte
         {
             MovieData[] moviesData = null;
             String sortByText = params[0];
+            String pageNumber = "1";
 
-            URL movieListUrl = NetworkUtils.buildUrl(sortByText, "1");
+            if(params.length > 1)
+            {
+                pageNumber = params[1];
+            }
+
+            URL movieListUrl = NetworkUtils.buildUrl(sortByText, pageNumber);
 
             try
             {
+                Log.d(TAG, "Call to API made for page:" + pageNumber);
                 String jsonResponse = NetworkUtils.getResponseFromHttpUrl(movieListUrl);
                 moviesData = JSONUtils.getMovieData(jsonResponse);
             }
