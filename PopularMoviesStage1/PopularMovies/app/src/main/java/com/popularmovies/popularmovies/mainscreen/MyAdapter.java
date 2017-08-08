@@ -1,4 +1,4 @@
-package com.popularmovies.popularmovies;
+package com.popularmovies.popularmovies.mainscreen;
 
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -6,6 +6,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
+import com.popularmovies.popularmovies.R;
 import com.popularmovies.popularmovies.utils.MovieData;
 import com.squareup.picasso.Picasso;
 
@@ -55,6 +56,11 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder>
 
     public void setMoviesData(MovieData[] moviesData)
     {
+        if(moviesData == null)
+        {
+            return;
+        }
+
         int len = moviesData.length;
         for (int i = 0; i < len; i++)
         {

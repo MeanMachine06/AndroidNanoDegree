@@ -19,7 +19,7 @@ public class JSONUtils
 
         try
         {
-            movieResultsArray = getMovieResultsArray(movieDetailsStr);
+            movieResultsArray = getResultsArray(movieDetailsStr);
             moviesData = new MovieData[movieResultsArray.length()];
 
             for (int i=0; i < movieResultsArray.length(); i++)
@@ -43,21 +43,25 @@ public class JSONUtils
         return moviesData;
     }
 
-    /*
-    public static String[] getMovieIDsArray(String movieDetailsStr)
+    public static ReviewData[] getMovieReviewsData(String jsonResponse)
     {
-        String[] movieIDsArray = null;
-        JSONArray movieResultsArray = null;
+        ReviewData[] reviewsData = null;
+        JSONArray resultsArray = null;
 
         try
         {
-            movieResultsArray = getMovieResultsArray(movieDetailsStr);
-            movieIDsArray = new String[movieResultsArray.length()];
+            resultsArray = getResultsArray(jsonResponse);
+            reviewsData = new ReviewData[resultsArray.length()];
 
-            for (int i=0; i < movieResultsArray.length(); i++)
+            for (int i=0; i < resultsArray.length(); i++)
             {
-                JSONObject movieObject = movieResultsArray.getJSONObject(i);
-                movieIDsArray[i] = movieObject.getString("id");
+                JSONObject reviewObject = resultsArray.getJSONObject(i);
+                String id = reviewObject.getString("id");
+                String author = reviewObject.getString("author");
+                String content = reviewObject.getString("content");
+                String url = reviewObject.getString("url");
+                ReviewData reviewData = new ReviewData(id, author, content, url);
+                reviewsData[i] = reviewData;
             }
         }
         catch (JSONException e)
@@ -65,23 +69,28 @@ public class JSONUtils
             e.printStackTrace();
         }
 
-        return movieIDsArray;
+        return reviewsData;
     }
 
-    public static String[] getMoviePosterURLArray(String movieDetailsStr)
+    public static TrailerData[] getMovieTrailersData(String jsonResponse)
     {
-        String[] posterURLArray = null;
-        JSONArray movieResultsArray = null;
+        TrailerData[] trailersData = null;
+        JSONArray resultsArray = null;
 
         try
         {
-            movieResultsArray = getMovieResultsArray(movieDetailsStr);
-            posterURLArray = new String[movieResultsArray.length()];
+            resultsArray = getResultsArray(jsonResponse);
+            trailersData = new TrailerData[resultsArray.length()];
 
-            for (int i=0; i < movieResultsArray.length(); i++)
+            for (int i=0; i < resultsArray.length(); i++)
             {
-                JSONObject movieObject = movieResultsArray.getJSONObject(i);
-                posterURLArray[i] = "http://image.tmdb.org/t/p/w185" + movieObject.getString("poster_path");
+                JSONObject reviewObject = resultsArray.getJSONObject(i);
+                String id = reviewObject.getString("id");
+                String name = reviewObject.getString("name");
+                String site = reviewObject.getString("site");
+                String key = reviewObject.getString("key");
+                TrailerData td = new TrailerData(id, name, site, key);
+                trailersData[i] = td;
             }
         }
         catch (JSONException e)
@@ -89,24 +98,23 @@ public class JSONUtils
             e.printStackTrace();
         }
 
-        return posterURLArray;
+        return trailersData;
     }
-    */
 
-    private static JSONArray getMovieResultsArray(String movieDetailsString)
+    private static JSONArray getResultsArray(String jsonString)
     {
         final String OWM_MESSAGE_CODE = "cod";
-        JSONObject movieDetailsJson = null;
-        JSONArray movieResultsArray = null;
+        JSONObject inputJson = null;
+        JSONArray resultsArray = null;
 
         try
         {
-            movieDetailsJson = new JSONObject(movieDetailsString);
+            inputJson = new JSONObject(jsonString);
 
             /* Is there an error? */
-            if (movieDetailsJson.has(OWM_MESSAGE_CODE))
+            if (inputJson.has(OWM_MESSAGE_CODE))
             {
-                int errorCode = movieDetailsJson.getInt(OWM_MESSAGE_CODE);
+                int errorCode = inputJson.getInt(OWM_MESSAGE_CODE);
 
                 switch (errorCode)
                 {
@@ -120,13 +128,13 @@ public class JSONUtils
                 }
             }
 
-            movieResultsArray = movieDetailsJson.getJSONArray("results");
+            resultsArray = inputJson.getJSONArray("results");
         }
         catch (JSONException e)
         {
             e.printStackTrace();
         }
 
-        return movieResultsArray;
+        return resultsArray;
     }
 }

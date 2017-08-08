@@ -10,22 +10,26 @@
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".MainActivity"
+        <activity android:name=".mainscreen.MainActivity"
                   android:launchMode="singleTop">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
-        <activity android:name=".MovieScreenActivity"
+        <activity android:name=".moviescreen.MovieScreenActivity"
                   android:label="@string/movie_screen_name"
-                  android:parentActivityName="com.popularmovies.popularmovies.MainActivity">
+                  android:parentActivityName="com.popularmovies.popularmovies.mainscreen.MainActivity">
 
             <!-- Parent activity meta-data to support 4.0 and lower -->
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.popularmovies.popularmovies.MainActivity" />
+                android:value="com.popularmovies.popularmovies.mainscreen.MainActivity" />
         </activity>
+        <provider
+            android:authorities="com.popularmovies.popularmovies"
+            android:name="com.popularmovies.popularmovies.utils.db.FavoriteMoviesContentProvider"
+            android:exported="false" />
     </application>
 
 </manifest>

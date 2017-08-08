@@ -5,8 +5,10 @@
     android:id="@+id/activity_movie_screen"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:layout_alignParentBottom="true"
+    android:layout_alignParentTop="true"
     android:padding="10dp"
-    tools:context="com.popularmovies.popularmovies.MovieScreenActivity">
+    tools:context="com.popularmovies.popularmovies.moviescreen.MovieScreenActivity">
 
     <ImageView
         android:id="@+id/movie_poster"
@@ -47,19 +49,52 @@
         android:textSize="@dimen/text_size_sub_text"
         tools:text="Release date: 16-07-2016"/>
 
-    <ScrollView
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@+id/movie_poster"
+        android:orientation="vertical"
         android:paddingTop="10dp">
 
         <TextView
             android:id="@+id/movie_plot"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Plot"
             android:textSize="@dimen/text_size_sub_text"
             tools:text="Plot of the movie goes here."/>
 
-    </ScrollView>
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="2dp"
+            android:layout_marginBottom="10dp"
+            android:layout_marginTop="10dp"
+            android:background="#666666"
+            />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="@dimen/text_size_movie_title"
+            android:paddingTop="5dp"
+            android:paddingBottom="15dp"
+            android:text="Trailers"/>
+
+        <ListView
+            android:id="@+id/listview_trailer"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="@dimen/text_size_movie_title"
+            android:paddingTop="5dp"
+            android:paddingBottom="15dp"
+            android:text="Reviews"/>
+
+        <ListView
+            android:id="@+id/listview_reviews"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"/>
+    </LinearLayout>
 </RelativeLayout>

@@ -43,7 +43,58 @@ public class NetworkUtils
             e.printStackTrace();
         }
 
-        Log.v(TAG, "Built URI " + url);
+        Log.v(TAG, "Built URL " + url);
+
+        return url;
+    }
+
+    public static URL buildUrlForReviews(String movieId)
+    {
+        Uri builtUri = Uri.parse(STATIC_TMDB_URL).buildUpon()
+                .appendPath(movieId)
+                .appendPath("reviews")
+                .appendQueryParameter(API_KEY_PARAM, TMDB_API_KEY)
+                .appendQueryParameter(LANGUAGE_PARAM, "en-US")
+                .appendQueryParameter(PAGE_PARAM, "1")
+                .build();
+
+        URL url = null;
+
+        try
+        {
+            url = new URL(builtUri.toString());
+        }
+        catch (MalformedURLException e)
+        {
+            e.printStackTrace();
+        }
+
+        Log.v(TAG, "Built URL " + url);
+
+        return url;
+    }
+
+    public static URL buildUrlForTrailers(String movieId)
+    {
+        Uri builtUri = Uri.parse(STATIC_TMDB_URL).buildUpon()
+                .appendPath(movieId)
+                .appendPath("videos")
+                .appendQueryParameter(API_KEY_PARAM, TMDB_API_KEY)
+                .appendQueryParameter(LANGUAGE_PARAM, "en-US")
+                .build();
+
+        URL url = null;
+
+        try
+        {
+            url = new URL(builtUri.toString());
+        }
+        catch (MalformedURLException e)
+        {
+            e.printStackTrace();
+        }
+
+        Log.v(TAG, "Built URL " + url);
 
         return url;
     }

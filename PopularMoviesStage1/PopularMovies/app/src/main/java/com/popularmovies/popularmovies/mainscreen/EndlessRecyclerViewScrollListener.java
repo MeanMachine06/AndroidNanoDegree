@@ -1,4 +1,4 @@
-package com.popularmovies.popularmovies;
+package com.popularmovies.popularmovies.mainscreen;
 
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
