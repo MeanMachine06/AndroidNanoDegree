@@ -6,6 +6,7 @@ import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.AsyncTask;
+import android.os.PersistableBundle;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -35,7 +36,9 @@ public class MainActivity extends AppCompatActivity implements MyAdapter.ListIte
     private final String SORT_BY_POPULAR = "popular";
     private final String SORT_BY_TOP_RATED = "top_rated";
     private final String SORT_BY_FAVORITE_MOVIES = "favorite_movies";
+    private final String SAVED_MOVIE_LIST = "saved_movie_list";
 
+    private MovieData[] mMoviesData;
     private RecyclerView mRecyclerView;
     private GridLayoutManager mGridLayoutManager;
     private MyAdapter myAdapter;
@@ -43,8 +46,6 @@ public class MainActivity extends AppCompatActivity implements MyAdapter.ListIte
 
     private String mCurrentSortOrder = SORT_BY_POPULAR;
     private final String FIRST_PAGE_NUMBER = "1";
-
-    private SQLiteDatabase mDb;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -73,13 +74,35 @@ public class MainActivity extends AppCompatActivity implements MyAdapter.ListIte
             @Override
             public void onLoadMore(int page, int totalItemsCount, RecyclerView view)
             {
-                if(mCurrentSortOrder != SORT_BY_FAVORITE_MOVIES)
+                if(!mCurrentSortOrder.equalsIgnoreCase(SORT_BY_FAVORITE_MOVIES))
+                {
                     loadMovieList(mCurrentSortOrder, Integer.toString(page));
+                }
             }
         };
         mRecyclerView.addOnScrollListener(mScrollListener);
 
+        if(savedInstanceState != null)
+        {
+            mMoviesData = (MovieData[]) savedInstanceState.getParcelableArray(SAVED_MOVIE_LIST);
+            myAdapter.setMoviesData(mMoviesData);
+        }
+
         loadMovieList(mCurrentSortOrder, FIRST_PAGE_NUMBER);
+    }
+
+    @Override
+    protected void onResume()
+    {
+        super.onResume();
+
+        Log.d(TAG, "onResume..");
+
+        if(mCurrentSortOrder.equalsIgnoreCase(SORT_BY_FAVORITE_MOVIES))
+        {
+            resetMovieList();
+            loadMovieList(mCurrentSortOrder, FIRST_PAGE_NUMBER);
+        }
     }
 
     @Override
@@ -158,6 +181,13 @@ public class MainActivity extends AppCompatActivity implements MyAdapter.ListIte
         return noOfColumns;
     }
 
+    @Override
+    protected void onSaveInstanceState(Bundle outState)
+    {
+        super.onSaveInstanceState(outState);
+        outState.putParcelableArray(SAVED_MOVIE_LIST, mMoviesData);
+    }
+
     class FetchMoviesData extends AsyncTask<String, Void, MovieData[]>
     {
 
@@ -173,7 +203,7 @@ public class MainActivity extends AppCompatActivity implements MyAdapter.ListIte
                 pageNumber = params[1];
             }
 
-            if(sortByText == SORT_BY_FAVORITE_MOVIES)
+            if(sortByText.equalsIgnoreCase(SORT_BY_FAVORITE_MOVIES))
             {
                 Cursor resultCursor = getContentResolver().query(FavoriteMoviesContract.FavoriteMoviesEntry.CONTENT_URI,
                         null,
@@ -228,6 +258,7 @@ public class MainActivity extends AppCompatActivity implements MyAdapter.ListIte
         protected void onPostExecute(MovieData[] moviesData)
         {
             Log.d(TAG, "onPostExecute");
+            mMoviesData = moviesData;
             myAdapter.setMoviesData(moviesData);
         }
     }
