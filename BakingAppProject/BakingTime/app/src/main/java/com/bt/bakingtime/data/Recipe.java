@@ -14,7 +14,7 @@ public class Recipe
     private String mImageUrl;
 
     private ArrayList<Ingredients> mIngrediants;
-    private ArrayList<RecipeSteps> mRecipeSteps;
+    private ArrayList<RecipeStep> mRecipeSteps;
 
     public Recipe(String id, String recipeName, String servings, String imageUrl)
     {
@@ -24,7 +24,17 @@ public class Recipe
         mImageUrl = imageUrl;
 
         mIngrediants = new ArrayList<Ingredients>();
-        mRecipeSteps = new ArrayList<RecipeSteps>();
+        mRecipeSteps = new ArrayList<RecipeStep>();
+    }
+
+    public void addIngredient(Ingredients ingredients)
+    {
+        mIngrediants.add(ingredients);
+    }
+
+    public void addRecipeStep(RecipeStep recipeStep)
+    {
+        mRecipeSteps.add(recipeStep);
     }
 
     public String getId()
@@ -52,12 +62,12 @@ public class Recipe
         return mIngrediants;
     }
 
-    public ArrayList<RecipeSteps> getRecipeSteps()
+    public ArrayList<RecipeStep> getRecipeSteps()
     {
         return mRecipeSteps;
     }
 
-    static class Ingredients
+    public static class Ingredients
     {
         private String mQuantity;
         private String mMeasure;
@@ -86,7 +96,7 @@ public class Recipe
         }
     }
 
-    static class RecipeSteps
+    public static class RecipeStep
     {
         private String mId;
         private String mShortDescription;
@@ -94,7 +104,7 @@ public class Recipe
         private String mVideoUrl;
         private String mThumbnailUrl;
 
-        public RecipeSteps(String id, String shortDescription, String longDescription, String videoUrl, String thumbnailUrl)
+        public RecipeStep(String id, String shortDescription, String longDescription, String videoUrl, String thumbnailUrl)
         {
             mId = id;
             mShortDescription = shortDescription;

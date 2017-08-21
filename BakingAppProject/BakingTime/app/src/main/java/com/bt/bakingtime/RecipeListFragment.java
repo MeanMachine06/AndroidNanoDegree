@@ -1,5 +1,6 @@
 package com.bt.bakingtime;
 
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -10,7 +11,10 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.bt.bakingtime.data.Recipe;
+import com.bt.bakingtime.utils.JSONUtils;
+import com.bt.bakingtime.utils.NetworkUtils;
 
+import java.io.IOException;
 import java.util.ArrayList;
 
 /**
@@ -19,6 +23,7 @@ import java.util.ArrayList;
 
 public class RecipeListFragment extends Fragment
 {
+    private ArrayList<Recipe> mRecipiesData;
     private RecipeListAdapter mRecipeListAdapter;
 
     public RecipeListFragment()
@@ -31,13 +36,39 @@ public class RecipeListFragment extends Fragment
     {
         super.onCreate(savedInstanceState);
 
-        ArrayList<Recipe> recipes = new ArrayList<Recipe>();
-        Recipe r1 = new Recipe("1", "My First Recipe", "10", "");
-        recipes.add(r1);
-        Recipe r2 = new Recipe("2", "My Second Recipe", "4", "");
-        recipes.add(r2);
+        getRecipiesData();
+        mRecipeListAdapter = new RecipeListAdapter(this.getContext(), mRecipiesData);
+    }
 
-        mRecipeListAdapter = new RecipeListAdapter(this.getContext(), recipes);
+    private void getRecipiesData()
+    {
+        mRecipiesData = new ArrayList<>();
+
+        new AsyncTask<Void, Void, ArrayList<Recipe>>()
+        {
+            @Override
+            protected ArrayList<Recipe> doInBackground(Void... params)
+            {
+                try
+                {
+                    String jsonStringResponse = NetworkUtils.getResponseFromHttpUrl(NetworkUtils.buildUrl());
+                    mRecipiesData = JSONUtils.getRecipiesData(jsonStringResponse);
+                }
+                catch (IOException e)
+                {
+                    e.printStackTrace();
+                }
+
+                return mRecipiesData;
+            }
+
+            @Override
+            protected void onPostExecute(ArrayList<Recipe> recipes)
+            {
+                super.onPostExecute(recipes);
+                mRecipeListAdapter.setRecipesData(recipes);
+            }
+        }.execute();
     }
 
     @Nullable @Override

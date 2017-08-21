@@ -49,6 +49,14 @@ public class RecipeListAdapter extends RecyclerView.Adapter<RecipeListAdapter.Vi
         return mRecipies.size();
     }
 
+    public void setRecipesData(ArrayList<Recipe> recipies)
+    {
+        mRecipies.clear();
+        mRecipies.addAll(recipies);
+
+        this.notifyDataSetChanged();
+    }
+
     public class ViewHolder extends RecyclerView.ViewHolder
     {
         private Recipe mRecipe;
