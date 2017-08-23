@@ -7,7 +7,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:gravity="center_horizontal"
-    tools:context="com.bt.bakingtime.MainActivity">
+    tools:context="com.bt.bakingtime.activities.main.MainActivity">
 
     <ImageView
         android:id="@+id/imageView"
@@ -20,10 +20,9 @@
         app:srcCompat="@drawable/home_title"
         />
 
-    <fragment
-        android:name="com.bt.bakingtime.RecipeListFragment"
-        android:id="@+id/fragment_recipe_list"
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/rv_recipe_list"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        />
+        android:scrollbars="vertical"/>
 </LinearLayout>

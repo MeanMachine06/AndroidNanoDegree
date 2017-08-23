@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              xmlns:tools="http://schemas.android.com/tools"
+              android:orientation="vertical"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:paddingLeft="16dp"
+              android:paddingRight="16dp"
+              tools:ignore="MissingPrefix">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:gravity="center_vertical"
+        android:layout_weight="0">
+
+        <Button
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:background="@drawable/arrow_back"/>
+
+        <TextView
+            android:id="@+id/tv_recipe_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            tools:text="Recipe Name"
+            android:gravity="center_horizontal"
+            android:textSize="20sp"
+            fontPath="fonts/Montserrat-Regular.otf"
+            android:textColor="@color/colorPrimaryDark"/>
+
+    </LinearLayout>
+
+    <fragment
+        android:id="@+id/fragment_recipe_detail_list"
+        android:name="com.bt.bakingtime.activities.recipedetaillist.RecipeDetailListFragment"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        tools:layout="@layout/fragment_recipe_detail_list"/>
+
+</LinearLayout>
