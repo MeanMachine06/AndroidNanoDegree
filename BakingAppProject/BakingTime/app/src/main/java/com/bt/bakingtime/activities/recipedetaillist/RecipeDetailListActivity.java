@@ -1,21 +1,28 @@
 package com.bt.bakingtime.activities.recipedetaillist;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
+import android.view.View;
+import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bt.bakingtime.R;
+import com.bt.bakingtime.activities.main.MainActivity;
+import com.bt.bakingtime.activities.recipestepdetails.RecipeStepDetailFragment;
+import com.bt.bakingtime.activities.recipestepdetails.StepDetailsActivity;
 import com.bt.bakingtime.data.Recipe;
 
 /**
  * Created by Aditya on 8/22/2017.
  */
 
-public class RecipeDetailListActivity extends AppCompatActivity
+public class RecipeDetailListActivity extends AppCompatActivity implements RecipeDetailListFragment.OnStepClickListener
 {
     private Recipe mRecipe;
+    private Toast mToast;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState)
@@ -32,5 +39,26 @@ public class RecipeDetailListActivity extends AppCompatActivity
 
         RecipeDetailListFragment recipeDetailListFragment = (RecipeDetailListFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_recipe_detail_list);
         recipeDetailListFragment.setRecipe(mRecipe);
+
+        ImageButton backButton = (ImageButton) this.findViewById(R.id.ib_back_button);
+        backButton.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                RecipeDetailListActivity.this.finish();
+            }
+        });
+    }
+
+    @Override
+    public void onStepSelected(Recipe.RecipeStep recipeStep)
+    {
+        mToast = Toast.makeText(this, "Step: " + recipeStep.getShortDescription(), Toast.LENGTH_SHORT);
+        mToast.show();
+
+        Intent intent = new Intent(this, StepDetailsActivity.class);
+        intent.putExtra("recipe_step", recipeStep);
+        startActivity(intent);
     }
 }

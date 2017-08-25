@@ -21,8 +21,6 @@
             android:layout_marginLeft="2dp"
             android:layout_marginRight="2dp"
             android:layout_marginBottom="8dp"
-            android:clickable="true"
-            android:foreground="?android:attr/selectableItemBackground"
             app:cardBackgroundColor="@color/cardview_light_background"
             app:cardCornerRadius="@dimen/cardview_default_radius"
             app:cardElevation="@dimen/cardview_default_elevation">
@@ -55,8 +53,6 @@
             android:layout_marginLeft="2dp"
             android:layout_marginRight="2dp"
             android:layout_marginBottom="8dp"
-            android:clickable="true"
-            android:foreground="?android:attr/selectableItemBackground"
             app:cardBackgroundColor="@color/cardview_light_background"
             app:cardCornerRadius="@dimen/cardview_default_radius"
             app:cardElevation="@dimen/cardview_default_elevation">

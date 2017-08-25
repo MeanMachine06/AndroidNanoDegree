@@ -1,5 +1,7 @@
 package com.bt.bakingtime.activities.recipedetaillist;
 
+import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -11,6 +13,7 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bt.bakingtime.R;
 import com.bt.bakingtime.data.Recipe;
@@ -23,6 +26,7 @@ import java.util.ArrayList;
 
 public class RecipeDetailListFragment extends Fragment
 {
+    private OnStepClickListener mOnStepClickListener;
     private LinearLayout mIngredientsLayout;
     private LinearLayout mRecipeStepsLayout;
 
@@ -35,6 +39,21 @@ public class RecipeDetailListFragment extends Fragment
     public void onCreate(@Nullable Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
+    }
+
+    @Override
+    public void onAttach(Context context)
+    {
+        super.onAttach(context);
+
+        try
+        {
+            mOnStepClickListener = (OnStepClickListener) context;
+        }
+        catch (ClassCastException e)
+        {
+            throw new ClassCastException(context.toString() + " must implement OnStepClickListener");
+        }
     }
 
     @Nullable @Override
@@ -78,13 +97,26 @@ public class RecipeDetailListFragment extends Fragment
         int numOfSteps = recipeSteps.size();
         for (int j = 0; j < numOfSteps; j++)
         {
-            Recipe.RecipeStep recipeStep = recipeSteps.get(j);
+            final Recipe.RecipeStep recipeStep = recipeSteps.get(j);
             View view = layoutInflater.inflate(R.layout.item_layout_recipe_steps_list, mRecipeStepsLayout, false);
+            view.setOnClickListener(new View.OnClickListener()
+            {
+                @Override
+                public void onClick(View v)
+                {
+                    mOnStepClickListener.onStepSelected(recipeStep);
+                }
+            });
 
             TextView recipeStepTextView = (TextView) view.findViewById(R.id.tv_step_name);
             recipeStepTextView.setText(String.valueOf(j + 1) + ". " + recipeStep.getShortDescription());
 
             mRecipeStepsLayout.addView(view);
         }
+    }
+
+    public interface OnStepClickListener
+    {
+        void onStepSelected(Recipe.RecipeStep recipeStep);
     }
 }

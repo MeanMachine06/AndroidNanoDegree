@@ -50,7 +50,7 @@ public class JSONUtils
                     String longDes = recipeStepObject.getString("description");
                     String videoUrl = recipeStepObject.getString("videoURL");
                     String thumbnailUrl = recipeStepObject.getString("thumbnailURL");
-                    recipe.addRecipeStep(new Recipe.RecipeStep(stepId, shortDes, longDes, videoUrl, thumbnailUrl));
+                    recipe.addRecipeStep(new Recipe.RecipeStep(stepId, recipeName, shortDes, longDes, videoUrl, thumbnailUrl));
                 }
 
                 recipeArrayList.add(recipe);

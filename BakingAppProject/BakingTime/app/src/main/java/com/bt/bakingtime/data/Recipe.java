@@ -134,14 +134,16 @@ public class Recipe implements Parcelable
     public static class RecipeStep implements Parcelable
     {
         private String mId;
+        private String mRecipeName;
         private String mShortDescription;
         private String mLongDescription;
         private String mVideoUrl;
         private String mThumbnailUrl;
 
-        public RecipeStep(String id, String shortDescription, String longDescription, String videoUrl, String thumbnailUrl)
+        public RecipeStep(String id, String recipeName, String shortDescription, String longDescription, String videoUrl, String thumbnailUrl)
         {
             mId = id;
+            mRecipeName = recipeName;
             mShortDescription = shortDescription;
             mLongDescription = longDescription;
             mVideoUrl = videoUrl;
@@ -173,6 +175,11 @@ public class Recipe implements Parcelable
             return mThumbnailUrl;
         }
 
+        public String getRecipeName()
+        {
+            return mRecipeName;
+        }
+
         @Override public int describeContents()
         {
             return 0;
@@ -181,6 +188,7 @@ public class Recipe implements Parcelable
         @Override public void writeToParcel(Parcel dest, int flags)
         {
             dest.writeString(this.mId);
+            dest.writeString(this.mRecipeName);
             dest.writeString(this.mShortDescription);
             dest.writeString(this.mLongDescription);
             dest.writeString(this.mVideoUrl);
@@ -190,6 +198,7 @@ public class Recipe implements Parcelable
         protected RecipeStep(Parcel in)
         {
             this.mId = in.readString();
+            this.mRecipeName = in.readString();
             this.mShortDescription = in.readString();
             this.mLongDescription = in.readString();
             this.mVideoUrl = in.readString();
