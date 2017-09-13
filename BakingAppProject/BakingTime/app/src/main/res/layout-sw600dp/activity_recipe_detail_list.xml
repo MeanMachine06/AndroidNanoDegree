@@ -11,7 +11,6 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="56dp"
-        android:layout_weight="0"
         android:gravity="center_vertical"
         android:orientation="horizontal">
 
@@ -41,7 +40,21 @@
             android:name="com.bt.bakingtime.activities.recipedetaillist.RecipeDetailListFragment"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:layout_weight="2"
             tools:layout="@layout/fragment_recipe_detail_list"/>
 
+        <View android:layout_width="1dp"
+              android:layout_height="match_parent"
+              android:layout_marginLeft="8dp"
+              android:layout_marginRight="8dp"
+              android:background="#eeeeee"/>
+
+        <fragment
+            android:id="@+id/fragment_recipe_step_detail"
+            android:name="com.bt.bakingtime.activities.recipestepdetails.RecipeStepDetailFragment"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            tools:layout="@layout/fragment_recipe_step_detail"/>
     </LinearLayout>
 </LinearLayout>
