@@ -99,6 +99,7 @@ public class RecipeDetailListFragment extends Fragment
         {
             final Recipe.RecipeStep recipeStep = recipeSteps.get(j);
             View view = layoutInflater.inflate(R.layout.item_layout_recipe_steps_list, mRecipeStepsLayout, false);
+            view.setId(j);
             view.setOnClickListener(new View.OnClickListener()
             {
                 @Override

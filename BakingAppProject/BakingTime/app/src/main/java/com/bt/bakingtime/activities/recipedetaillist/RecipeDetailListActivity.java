@@ -10,8 +10,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bt.bakingtime.R;
-import com.bt.bakingtime.activities.main.MainActivity;
-import com.bt.bakingtime.activities.recipestepdetails.RecipeStepDetailFragment;
 import com.bt.bakingtime.activities.recipestepdetails.StepDetailsActivity;
 import com.bt.bakingtime.data.Recipe;
 
