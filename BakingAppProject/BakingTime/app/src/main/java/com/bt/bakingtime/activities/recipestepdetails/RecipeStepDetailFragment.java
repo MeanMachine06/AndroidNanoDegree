@@ -1,5 +1,8 @@
 package com.bt.bakingtime.activities.recipestepdetails;
 
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -10,6 +13,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bt.bakingtime.R;
 import com.bt.bakingtime.activities.recipedetaillist.RecipeDetailListFragment;
@@ -31,6 +35,8 @@ import com.google.android.exoplayer2.trackselection.TrackSelector;
 import com.google.android.exoplayer2.ui.SimpleExoPlayerView;
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
 import com.google.android.exoplayer2.util.Util;
+import com.squareup.picasso.Picasso;
+import com.squareup.picasso.Target;
 
 
 public class RecipeStepDetailFragment extends Fragment implements ExoPlayer.EventListener
@@ -133,14 +139,35 @@ public class RecipeStepDetailFragment extends Fragment implements ExoPlayer.Even
 
             mExoPlayer = ExoPlayerFactory.newSimpleInstance(this.getContext(), trackSelector, loadControl);
             mSimpleExoPlayerView.setPlayer(mExoPlayer);
-
             mExoPlayer.addListener(this);
 
             String userAgent = Util.getUserAgent(this.getContext(), "BakingApp");
             MediaSource mediaSource = new ExtractorMediaSource(mediaUri, new DefaultDataSourceFactory(this.getContext(), userAgent), new DefaultExtractorsFactory(), null, null);
             mExoPlayer.prepare(mediaSource);
             mExoPlayer.setPlayWhenReady(true);
+
+            addThumbnail();
         }
+    }
+
+    private void addThumbnail()
+    {
+        Target target = new Target() {
+            @Override
+            public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
+                //Toast.makeText(getContext(), "Bitmap loaded", Toast.LENGTH_LONG).show();
+                mSimpleExoPlayerView.setDefaultArtwork(bitmap);
+                mSimpleExoPlayerView.setBackground(new BitmapDrawable(getResources(), bitmap));
+            }
+
+            @Override
+            public void onBitmapFailed(Drawable errorDrawable) {}
+
+            @Override
+            public void onPrepareLoad(Drawable placeHolderDrawable) {}
+        };
+
+        Picasso.with(this.getContext()).load(mRecipeStep.getThumbnailUrl()).into(target);
     }
 
     private void initializeMediaSession()
