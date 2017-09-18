@@ -36,7 +36,10 @@ import com.google.android.exoplayer2.util.Util;
 public class RecipeStepDetailFragment extends Fragment implements ExoPlayer.EventListener
 {
     private static final java.lang.String TAG = RecipeDetailListFragment.class.getSimpleName();
-    
+    private static final String PLAY_VIEW_WHEN_FOREGROUND = "playViewWhenForeground";
+    private static final String CURRENT_POSITION = "currentPosition";
+    private static final String RECIPE_VIDEO_URL = "recipeViewoUrl";
+
     private Recipe.RecipeStep mRecipeStep;
     private TextView mUpperTextView;
     private TextView mLowerTextView;
@@ -44,6 +47,9 @@ public class RecipeStepDetailFragment extends Fragment implements ExoPlayer.Even
     private SimpleExoPlayer mExoPlayer;
     private MediaSessionCompat mMediaSession;
     private PlaybackStateCompat.Builder mStateBuilder;
+    private boolean mPlayViewWhenForeground;
+    private long mLastPosition;
+    private String mRecipeVideoUrl;
 
     public RecipeStepDetailFragment()
     {
@@ -66,6 +72,38 @@ public class RecipeStepDetailFragment extends Fragment implements ExoPlayer.Even
     }
 
     @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState)
+    {
+        super.onActivityCreated(savedInstanceState);
+
+        if(savedInstanceState != null)
+        {
+            mPlayViewWhenForeground = savedInstanceState.getBoolean(PLAY_VIEW_WHEN_FOREGROUND);
+            mLastPosition = savedInstanceState.getLong(CURRENT_POSITION);
+            mRecipeVideoUrl = savedInstanceState.getString(RECIPE_VIDEO_URL);
+        }
+        else
+        {
+            mPlayViewWhenForeground = false;
+            mLastPosition = 0;
+            mRecipeVideoUrl = "";
+        }
+    }
+
+    @Override public void onStart()
+    {
+        super.onStart();
+
+        if(mExoPlayer == null)
+        {
+            initializePlayer(Uri.parse(mRecipeVideoUrl));
+        }
+
+        mExoPlayer.seekTo(mLastPosition);
+        mExoPlayer.setPlayWhenReady(mPlayViewWhenForeground);
+    }
+
+    @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState)
     {
         super.onViewCreated(view, savedInstanceState);
@@ -82,7 +120,8 @@ public class RecipeStepDetailFragment extends Fragment implements ExoPlayer.Even
         mUpperTextView.setText("Step: " + mRecipeStep.getShortDescription());
         mLowerTextView.setText(mRecipeStep.getLongDescription());
 
-        initializePlayer(Uri.parse(mRecipeStep.getVideoUrl()));
+        mRecipeVideoUrl = mRecipeStep.getVideoUrl();
+        initializePlayer(Uri.parse(mRecipeVideoUrl));
     }
 
     private void initializePlayer(Uri mediaUri)
@@ -133,6 +172,18 @@ public class RecipeStepDetailFragment extends Fragment implements ExoPlayer.Even
         super.onDestroy();
         releasePlayer();
         mMediaSession.setActive(false);
+    }
+
+    @Override public void onSaveInstanceState(Bundle outState)
+    {
+        super.onSaveInstanceState(outState);
+
+        mPlayViewWhenForeground = mExoPlayer.getPlayWhenReady();
+        mLastPosition = mExoPlayer.getCurrentPosition();
+
+        outState.putBoolean(PLAY_VIEW_WHEN_FOREGROUND, mPlayViewWhenForeground);
+        outState.putString(RECIPE_VIDEO_URL, mRecipeVideoUrl);
+        outState.putLong(CURRENT_POSITION, mLastPosition);
     }
 
     @Override
