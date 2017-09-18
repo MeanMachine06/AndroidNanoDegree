@@ -186,6 +186,14 @@ public class RecipeStepDetailFragment extends Fragment implements ExoPlayer.Even
         mMediaSession.setActive(true);
     }
 
+    @Override public void onPause()
+    {
+        super.onPause();
+
+        releasePlayer();
+        mMediaSession.setActive(false);
+    }
+
     private void releasePlayer()
     {
         mExoPlayer.stop();
