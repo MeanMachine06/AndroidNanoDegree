@@ -10,6 +10,7 @@ import android.widget.TextView;
 
 import com.bt.bakingtime.R;
 import com.bt.bakingtime.data.Recipe;
+import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 
@@ -100,6 +101,13 @@ public class RecipeListAdapter extends RecyclerView.Adapter<RecipeListAdapter.Vi
 
             recipeNameTextView.setText(mRecipe.getRecipeName());
             recipeServingsTextView.setText("Servings : " + mRecipe.getServings());
+
+            if(!mRecipe.getImageUrl().isEmpty())
+            {
+                Picasso.with(mContext)
+                        .load(mRecipe.getImageUrl())
+                        .into(recipeImageView);
+            }
         }
     }
 
