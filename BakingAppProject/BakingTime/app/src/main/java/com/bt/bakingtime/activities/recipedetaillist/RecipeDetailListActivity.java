@@ -10,6 +10,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bt.bakingtime.R;
+import com.bt.bakingtime.activities.recipestepdetails.RecipeStepDetailFragment;
 import com.bt.bakingtime.activities.recipestepdetails.StepDetailsActivity;
 import com.bt.bakingtime.data.Recipe;
 
@@ -22,12 +23,17 @@ public class RecipeDetailListActivity extends AppCompatActivity implements Recip
     private Recipe mRecipe;
     private Toast mToast;
 
+    private RecipeStepDetailFragment mRecipeStepDetailFragment;
+    private boolean mIsTablet;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_recipe_detail_list);
+
+        mIsTablet = false;
 
         mRecipe = getIntent().getParcelableExtra("recipe_data");
         Toast.makeText(this, "Recipe: " + mRecipe.getRecipeName(), Toast.LENGTH_SHORT).show();
@@ -37,6 +43,14 @@ public class RecipeDetailListActivity extends AppCompatActivity implements Recip
 
         RecipeDetailListFragment recipeDetailListFragment = (RecipeDetailListFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_recipe_detail_list);
         recipeDetailListFragment.setRecipe(mRecipe);
+
+        if (getSupportFragmentManager().findFragmentById(R.id.fragment_recipe_step_detail) != null)
+        {
+            mIsTablet = true;
+
+            mRecipeStepDetailFragment = (RecipeStepDetailFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_recipe_step_detail);
+            mRecipeStepDetailFragment.setRecipeStepDetail(mRecipe.getRecipeSteps().get(0));
+        }
 
         ImageButton backButton = (ImageButton) this.findViewById(R.id.ib_back_button);
         backButton.setOnClickListener(new View.OnClickListener()
@@ -55,8 +69,15 @@ public class RecipeDetailListActivity extends AppCompatActivity implements Recip
         mToast = Toast.makeText(this, "Step: " + recipeStep.getShortDescription(), Toast.LENGTH_SHORT);
         mToast.show();
 
-        Intent intent = new Intent(this, StepDetailsActivity.class);
-        intent.putExtra("recipe_step", recipeStep);
-        startActivity(intent);
+        if(mIsTablet)
+        {
+            mRecipeStepDetailFragment.setRecipeStepDetail(recipeStep);
+        }
+        else
+        {
+            Intent intent = new Intent(this, StepDetailsActivity.class);
+            intent.putExtra("recipe_step", recipeStep);
+            startActivity(intent);
+        }
     }
 }

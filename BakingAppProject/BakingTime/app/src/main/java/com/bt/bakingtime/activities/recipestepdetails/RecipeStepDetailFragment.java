@@ -152,10 +152,11 @@ public class RecipeStepDetailFragment extends Fragment implements ExoPlayer.Even
 
     private void addThumbnail()
     {
-        Target target = new Target() {
+        Target target = new Target()
+        {
             @Override
-            public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
-                //Toast.makeText(getContext(), "Bitmap loaded", Toast.LENGTH_LONG).show();
+            public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from)
+            {
                 mSimpleExoPlayerView.setDefaultArtwork(bitmap);
                 mSimpleExoPlayerView.setBackground(new BitmapDrawable(getResources(), bitmap));
             }
@@ -167,12 +168,18 @@ public class RecipeStepDetailFragment extends Fragment implements ExoPlayer.Even
             public void onPrepareLoad(Drawable placeHolderDrawable) {}
         };
 
-        Picasso.with(this.getContext()).load(mRecipeStep.getThumbnailUrl()).into(target);
+        if(!mRecipeStep.getThumbnailUrl().isEmpty())
+        {
+            Picasso.with(this.getContext()).load(mRecipeStep.getThumbnailUrl()).into(target);
+        }
+        else
+        {
+            Toast.makeText(getContext(), "No thumbnail found!", Toast.LENGTH_SHORT).show();
+        }
     }
 
     private void initializeMediaSession()
     {
-
         mMediaSession = new MediaSessionCompat(this.getContext(), TAG);
         mMediaSession.setFlags(MediaSessionCompat.FLAG_HANDLES_MEDIA_BUTTONS | MediaSessionCompat.FLAG_HANDLES_TRANSPORT_CONTROLS);
         mMediaSession.setMediaButtonReceiver(null);
@@ -196,9 +203,12 @@ public class RecipeStepDetailFragment extends Fragment implements ExoPlayer.Even
 
     private void releasePlayer()
     {
-        mExoPlayer.stop();
-        mExoPlayer.release();
-        mExoPlayer = null;
+        if(mExoPlayer != null)
+        {
+            mExoPlayer.stop();
+            mExoPlayer.release();
+            mExoPlayer = null;
+        }
     }
 
     @Override
@@ -213,12 +223,15 @@ public class RecipeStepDetailFragment extends Fragment implements ExoPlayer.Even
     {
         super.onSaveInstanceState(outState);
 
-        mPlayViewWhenForeground = mExoPlayer.getPlayWhenReady();
-        mLastPosition = mExoPlayer.getCurrentPosition();
+        if(mExoPlayer != null)
+        {
+            mPlayViewWhenForeground = mExoPlayer.getPlayWhenReady();
+            mLastPosition = mExoPlayer.getCurrentPosition();
 
-        outState.putBoolean(PLAY_VIEW_WHEN_FOREGROUND, mPlayViewWhenForeground);
-        outState.putString(RECIPE_VIDEO_URL, mRecipeVideoUrl);
-        outState.putLong(CURRENT_POSITION, mLastPosition);
+            outState.putBoolean(PLAY_VIEW_WHEN_FOREGROUND, mPlayViewWhenForeground);
+            outState.putString(RECIPE_VIDEO_URL, mRecipeVideoUrl);
+            outState.putLong(CURRENT_POSITION, mLastPosition);
+        }
     }
 
     @Override
