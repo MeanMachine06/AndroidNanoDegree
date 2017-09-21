@@ -3,11 +3,12 @@ package com.bt.bakingtime.activities.main;
 import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
+import android.os.Parcelable;
+import android.os.PersistableBundle;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.widget.Toast;
 
 import com.bt.bakingtime.R;
 import com.bt.bakingtime.activities.recipedetaillist.RecipeDetailListActivity;
@@ -23,8 +24,13 @@ import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
 public class MainActivity extends AppCompatActivity
 {
+    private static final String KEY_RECIPE_LIST_STATE = "keyRecipeListState";
+
     private ArrayList<Recipe> mRecipiesData;
+    private RecyclerView mRecipeListRecyclerView;
+    private LinearLayoutManager mLinearLayoutManager;
     private RecipeListAdapter mRecipeListAdapter;
+    private Parcelable mRecipeListState;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -51,9 +57,30 @@ public class MainActivity extends AppCompatActivity
             }
         });
 
-        RecyclerView recipeListRecyclerView = (RecyclerView) this.findViewById(R.id.rv_recipe_list);
-        recipeListRecyclerView.setAdapter(mRecipeListAdapter);
-        recipeListRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+        mRecipeListRecyclerView = (RecyclerView) this.findViewById(R.id.rv_recipe_list);
+        mRecipeListRecyclerView.setAdapter(mRecipeListAdapter);
+        mLinearLayoutManager = new LinearLayoutManager(this);
+        mRecipeListRecyclerView.setLayoutManager(mLinearLayoutManager);
+    }
+
+    @Override protected void onPause()
+    {
+        super.onPause();
+
+        if(mRecipeListState != null)
+        {
+            mLinearLayoutManager.onRestoreInstanceState(mRecipeListState);
+        }
+    }
+
+    @Override protected void onResume()
+    {
+        super.onResume();
+
+        if(mRecipeListState != null)
+        {
+            mLinearLayoutManager.onRestoreInstanceState(mRecipeListState);
+        }
     }
 
     private void getRecipiesData()
@@ -83,6 +110,11 @@ public class MainActivity extends AppCompatActivity
             {
                 super.onPostExecute(recipes);
                 mRecipeListAdapter.setRecipesData(recipes);
+
+                if(mRecipeListState != null)
+                {
+                    mLinearLayoutManager.onRestoreInstanceState(mRecipeListState);
+                }
             }
         }.execute();
     }
@@ -90,5 +122,23 @@ public class MainActivity extends AppCompatActivity
     @Override protected void attachBaseContext(Context newBase)
     {
         super.attachBaseContext(CalligraphyContextWrapper.wrap(newBase));
+    }
+
+    @Override protected void onSaveInstanceState(Bundle outState)
+    {
+        super.onSaveInstanceState(outState);
+
+        mRecipeListState = mLinearLayoutManager.onSaveInstanceState();
+        outState.putParcelable(KEY_RECIPE_LIST_STATE, mRecipeListState);
+    }
+
+    @Override protected void onRestoreInstanceState(Bundle savedInstanceState)
+    {
+        super.onRestoreInstanceState(savedInstanceState);
+
+        if(savedInstanceState != null)
+        {
+            mRecipeListState = savedInstanceState.getParcelable(KEY_RECIPE_LIST_STATE);
+        }
     }
 }
